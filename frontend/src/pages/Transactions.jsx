@@ -24,9 +24,22 @@ function Transactions() {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
+  const [filterType, setFilterType] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  const [filterSearch, setFilterSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+
   const fetchTransactions = async () => {
     try {
-      const res = await getTransactions();
+      const res = await getTransactions({
+        type: filterType,
+        category: filterCategory,
+        startDate: filterStartDate,
+        endDate: filterEndDate,
+        search: filterSearch,
+      });
       setTransactions(res.data);
     } catch (err) {
       setError("Failed to load transactions");
@@ -35,7 +48,28 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [
+    filterType,
+    filterCategory,
+    filterStartDate,
+    filterEndDate,
+    filterSearch,
+  ]);
+
+  const clearFilters = () => {
+    setFilterType("");
+    setFilterCategory("");
+    setFilterStartDate("");
+    setFilterEndDate("");
+    setFilterSearch("");
+  };
+
+  const hasActiveFilters =
+    filterType ||
+    filterCategory ||
+    filterStartDate ||
+    filterEndDate ||
+    filterSearch;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -125,6 +159,126 @@ function Transactions() {
                 ₹{totalExpense.toLocaleString()}
               </p>
             </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                aria-expanded={showFilters}
+                className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded px-1"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                  />
+                </svg>
+                Filters
+                {hasActiveFilters && (
+                  <span className="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                )}
+              </button>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-slate-400 hover:text-rose-500 transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+
+            {showFilters && (
+              <div className="mt-4 space-y-3">
+                <div>
+                  <label htmlFor="filter-search" className="sr-only">
+                    Search
+                  </label>
+                  <input
+                    id="filter-search"
+                    type="text"
+                    placeholder="Search by note or category..."
+                    value={filterSearch}
+                    onChange={(e) => setFilterSearch(e.target.value)}
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label htmlFor="filter-type" className="sr-only">
+                      Type
+                    </label>
+                    <select
+                      id="filter-type"
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">All types</option>
+                      <option value="income">Income</option>
+                      <option value="expense">Expense</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="filter-category" className="sr-only">
+                      Category
+                    </label>
+                    <select
+                      id="filter-category"
+                      value={filterCategory}
+                      onChange={(e) => setFilterCategory(e.target.value)}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">All categories</option>
+                      {CATEGORIES.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="filter-start" className="sr-only">
+                      From date
+                    </label>
+                    <input
+                      id="filter-start"
+                      type="date"
+                      value={filterStartDate}
+                      onChange={(e) => setFilterStartDate(e.target.value)}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="filter-end" className="sr-only">
+                      To date
+                    </label>
+                    <input
+                      id="filter-end"
+                      type="date"
+                      value={filterEndDate}
+                      onChange={(e) => setFilterEndDate(e.target.value)}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-8">
@@ -261,7 +415,9 @@ function Transactions() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
             {transactions.length === 0 && (
               <p className="p-8 text-slate-400 text-center text-sm">
-                No transactions yet
+                {hasActiveFilters
+                  ? "No transactions match your filters"
+                  : "No transactions yet"}
               </p>
             )}
             {transactions.map((t) => (

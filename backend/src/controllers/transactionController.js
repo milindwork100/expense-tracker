@@ -21,12 +21,29 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-// Read (all, for logged-in user)
+// Read (all, for logged-in user, with optional filters)
 exports.getTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ user: req.user._id }).sort({
-      date: -1,
-    });
+    const { type, category, startDate, endDate, search } = req.query;
+    const query = { user: req.user._id };
+
+    if (type) query.type = type;
+    if (category) query.category = category;
+
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(startDate);
+      if (endDate) query.date.$lte = new Date(endDate);
+    }
+
+    if (search) {
+      query.$or = [
+        { note: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const transactions = await Transaction.find(query).sort({ date: -1 });
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ message: err.message });

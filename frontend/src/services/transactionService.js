@@ -1,6 +1,13 @@
 import api from "./api";
 
-export const getTransactions = () => api.get("/transactions");
+export const getTransactions = (filters = {}) => {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.append(key, value);
+  });
+  const query = params.toString();
+  return api.get(`/transactions${query ? `?${query}` : ""}`);
+};
 
 export const createTransaction = (data) => {
   const formData = new FormData();
