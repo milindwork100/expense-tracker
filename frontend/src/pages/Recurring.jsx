@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
+import ConfirmDialog from "../components/common/ConfirmDialog";
 import { CATEGORIES } from "../utils/categories";
 import {
   getRecurring,
@@ -18,6 +20,7 @@ function Recurring() {
   const [startDate, setStartDate] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchRules = async () => {
     setLoading(true);
@@ -52,28 +55,33 @@ function Recurring() {
       setNote("");
       setStartDate("");
       fetchRules();
+      toast.success("Recurring transaction created");
     } catch (err) {
       setError(
         err.response?.data?.message || "Failed to create recurring transaction",
       );
+      toast.error("Failed to create recurring transaction");
     }
   };
 
-  const handleToggle = async (id) => {
+  const handleToggle = async (rule) => {
     try {
-      await toggleRecurring(id);
+      await toggleRecurring(rule._id);
       fetchRules();
+      toast.success(rule.active ? "Paused" : "Activated");
     } catch (err) {
-      setError("Failed to update");
+      toast.error("Failed to update");
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDelete = async () => {
     try {
-      await deleteRecurring(id);
+      await deleteRecurring(deleteTarget._id);
+      setDeleteTarget(null);
       fetchRules();
+      toast.success("Recurring transaction deleted");
     } catch (err) {
-      setError("Failed to delete");
+      toast.error("Failed to delete");
     }
   };
 
@@ -271,7 +279,7 @@ function Recurring() {
                     </p>
 
                     <button
-                      onClick={() => handleToggle(r._id)}
+                      onClick={() => handleToggle(r)}
                       aria-pressed={r.active}
                       aria-label={`${r.active ? "Pause" : "Activate"} ${r.category} recurring transaction`}
                       className={`text-xs px-2.5 py-1 rounded-full font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-300 ${
@@ -284,7 +292,7 @@ function Recurring() {
                     </button>
 
                     <button
-                      onClick={() => handleDelete(r._id)}
+                      onClick={() => setDeleteTarget(r)}
                       aria-label={`Delete ${r.category} recurring transaction`}
                       className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
                     >
@@ -297,6 +305,18 @@ function Recurring() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete recurring transaction?"
+        message={
+          deleteTarget
+            ? `This will stop the recurring ${deleteTarget.category} ${deleteTarget.type} of ₹${deleteTarget.amount}.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </Layout>
   );
 }

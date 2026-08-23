@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
+import ConfirmDialog from "../components/common/ConfirmDialog";
 import { CATEGORIES } from "../utils/categories";
 import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
 import { getBudgets, setBudget, deleteBudget } from "../services/budgetService";
@@ -29,6 +31,7 @@ function Budgets() {
   const [limit, setLimit] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchBudgets = async () => {
     setLoading(true);
@@ -54,17 +57,21 @@ function Budgets() {
       setCategory("");
       setLimit("");
       fetchBudgets();
+      toast.success("Budget saved");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to set budget");
+      toast.error("Failed to save budget");
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDelete = async () => {
     try {
-      await deleteBudget(id);
+      await deleteBudget(deleteTarget._id);
+      setDeleteTarget(null);
       fetchBudgets();
+      toast.success("Budget deleted");
     } catch (err) {
-      setError("Failed to delete budget");
+      toast.error("Failed to delete budget");
     }
   };
 
@@ -199,7 +206,7 @@ function Budgets() {
                         {b.category}
                       </p>
                       <button
-                        onClick={() => handleDelete(b._id)}
+                        onClick={() => setDeleteTarget(b)}
                         aria-label={`Delete ${b.category} budget`}
                         className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
                       >
@@ -268,6 +275,18 @@ function Budgets() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete budget?"
+        message={
+          deleteTarget
+            ? `This will remove the ${deleteTarget.category} budget for ${monthNames[month]} ${year}.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </Layout>
   );
 }
