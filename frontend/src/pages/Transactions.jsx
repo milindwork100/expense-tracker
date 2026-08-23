@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
+import ConfirmDialog from "../components/common/ConfirmDialog";
+import EditTransactionModal from "../components/transactions/EditTransactionModal";
 import { CATEGORIES } from "../utils/categories";
 import {
   getTransactions,
   createTransaction,
+  updateTransaction,
   deleteTransaction,
 } from "../services/transactionService";
 
@@ -17,6 +21,8 @@ function Transactions() {
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchTransactions = async () => {
     try {
@@ -51,19 +57,34 @@ function Transactions() {
       setReceipt(null);
       document.getElementById("receipt-input").value = "";
       fetchTransactions();
+      toast.success("Transaction added");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to add transaction");
+      toast.error("Failed to add transaction");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleEditSave = async (id, data) => {
     try {
-      await deleteTransaction(id);
+      await updateTransaction(id, data);
+      setEditingTransaction(null);
       fetchTransactions();
+      toast.success("Transaction updated");
     } catch (err) {
-      setError("Failed to delete transaction");
+      toast.error("Failed to update transaction");
+    }
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteTransaction(deleteTarget._id);
+      setDeleteTarget(null);
+      fetchTransactions();
+      toast.success("Transaction deleted");
+    } catch (err) {
+      toast.error("Failed to delete transaction");
     }
   };
 
@@ -284,7 +305,7 @@ function Transactions() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <p
                     className={`font-semibold text-sm ${
                       t.type === "income" ? "text-emerald-600" : "text-rose-600"
@@ -297,7 +318,14 @@ function Transactions() {
                     {t.amount.toLocaleString()}
                   </p>
                   <button
-                    onClick={() => handleDelete(t._id)}
+                    onClick={() => setEditingTransaction(t)}
+                    aria-label={`Edit ${t.category} transaction of ₹${t.amount}`}
+                    className="text-slate-400 hover:text-indigo-600 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeleteTarget(t)}
                     aria-label={`Delete ${t.category} transaction of ₹${t.amount}`}
                     className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
                   >
@@ -309,6 +337,24 @@ function Transactions() {
           </div>
         </div>
       </div>
+
+      <EditTransactionModal
+        transaction={editingTransaction}
+        onSave={handleEditSave}
+        onClose={() => setEditingTransaction(null)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete transaction?"
+        message={
+          deleteTarget
+            ? `This will permanently delete the ₹${deleteTarget.amount} ${deleteTarget.category} transaction.`
+            : ""
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </Layout>
   );
 }
