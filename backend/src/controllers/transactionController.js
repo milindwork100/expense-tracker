@@ -1,0 +1,105 @@
+const Transaction = require("../models/Transaction");
+
+// Create
+exports.createTransaction = async (req, res) => {
+  try {
+    const { type, amount, category, note, date } = req.body;
+
+    const transaction = await Transaction.create({
+      user: req.user._id,
+      type,
+      amount,
+      category,
+      note,
+      date,
+      receiptUrl: req.file ? req.file.path : undefined,
+    });
+
+    res.status(201).json(transaction);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Read (all, for logged-in user)
+exports.getTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user._id }).sort({
+      date: -1,
+    });
+    res.json(transactions);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Update
+exports.updateTransaction = async (req, res) => {
+  try {
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    Object.assign(transaction, req.body);
+    await transaction.save();
+
+    res.json(transaction);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Delete
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const transaction = await Transaction.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.json({ message: "Transaction deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Summary: totals by category (for pie chart) + monthly trend (for bar chart)
+exports.getSummary = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const categoryBreakdown = await Transaction.aggregate([
+      { $match: { user: userId, type: "expense" } },
+      { $group: { _id: "$category", total: { $sum: "$amount" } } },
+      { $sort: { total: -1 } },
+    ]);
+
+    const monthlyTrend = await Transaction.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+            type: "$type",
+          },
+          total: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    res.json({ categoryBreakdown, monthlyTrend });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
