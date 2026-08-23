@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/layout/Layout";
+import { CATEGORIES } from "../utils/categories";
 import {
   getRecurring,
   createRecurring,
@@ -78,7 +79,7 @@ function Recurring() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/40">
         <div className="max-w-2xl mx-auto px-4 py-6 md:py-10">
           <h1 className="text-3xl font-bold text-slate-800 mb-8">
             Recurring Transactions
@@ -89,7 +90,7 @@ function Recurring() {
               Set up a recurring transaction
             </h2>
             {error && (
-              <p role="alert" className="text-red-500 text-sm mb-4">
+              <p role="alert" className="text-rose-500 text-sm mb-4">
                 {error}
               </p>
             )}
@@ -101,9 +102,9 @@ function Recurring() {
                     type="button"
                     onClick={() => setType("expense")}
                     aria-pressed={type === "expense"}
-                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                       type === "expense"
-                        ? "bg-red-500 text-white"
+                        ? "bg-rose-500 text-white"
                         : "bg-white text-slate-500 hover:bg-slate-50"
                     }`}
                   >
@@ -113,9 +114,9 @@ function Recurring() {
                     type="button"
                     onClick={() => setType("income")}
                     aria-pressed={type === "income"}
-                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                       type === "income"
-                        ? "bg-green-500 text-white"
+                        ? "bg-emerald-500 text-white"
                         : "bg-white text-slate-500 hover:bg-slate-50"
                     }`}
                   >
@@ -133,7 +134,7 @@ function Recurring() {
                     placeholder="Amount"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -144,15 +145,20 @@ function Recurring() {
                   <label htmlFor="rec-category" className="sr-only">
                     Category
                   </label>
-                  <input
+                  <select
                     id="rec-category"
-                    type="text"
-                    placeholder="Category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
-                  />
+                  >
+                    <option value="">Select category</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="rec-frequency" className="sr-only">
@@ -162,7 +168,7 @@ function Recurring() {
                     id="rec-frequency"
                     value={frequency}
                     onChange={(e) => setFrequency(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
@@ -182,7 +188,7 @@ function Recurring() {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -196,14 +202,14 @@ function Recurring() {
                     placeholder="Note (optional)"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
               >
                 Create Recurring Rule
               </button>
@@ -230,8 +236,8 @@ function Recurring() {
                       aria-hidden="true"
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold ${
                         r.type === "income"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
+                          ? "bg-emerald-100 text-emerald-600"
+                          : "bg-rose-100 text-rose-600"
                       }`}
                     >
                       {r.type === "income" ? "+" : "−"}
@@ -253,7 +259,9 @@ function Recurring() {
                   <div className="flex items-center gap-4">
                     <p
                       className={`font-semibold text-sm ${
-                        r.type === "income" ? "text-green-600" : "text-red-600"
+                        r.type === "income"
+                          ? "text-emerald-600"
+                          : "text-rose-600"
                       }`}
                     >
                       <span className="sr-only">
@@ -266,9 +274,9 @@ function Recurring() {
                       onClick={() => handleToggle(r._id)}
                       aria-pressed={r.active}
                       aria-label={`${r.active ? "Pause" : "Activate"} ${r.category} recurring transaction`}
-                      className={`text-xs px-2.5 py-1 rounded-full font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                      className={`text-xs px-2.5 py-1 rounded-full font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-300 ${
                         r.active
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                           : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                       }`}
                     >
@@ -278,7 +286,7 @@ function Recurring() {
                     <button
                       onClick={() => handleDelete(r._id)}
                       aria-label={`Delete ${r.category} recurring transaction`}
-                      className="text-slate-300 hover:text-red-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-red-300 rounded"
+                      className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
                     >
                       Delete
                     </button>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/layout/Layout";
+import { CATEGORIES } from "../utils/categories";
 import {
   getTransactions,
   createTransaction,
@@ -76,7 +77,7 @@ function Transactions() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/40">
         <div className="max-w-3xl mx-auto px-4 py-6 md:py-10">
           <h1 className="text-3xl font-bold text-slate-800 mb-8">
             Transactions
@@ -86,20 +87,20 @@ function Transactions() {
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
               <p className="text-xs text-slate-500 mb-1">Balance</p>
               <p
-                className={`text-xl font-bold ${balance >= 0 ? "text-slate-800" : "text-red-600"}`}
+                className={`text-xl font-bold ${balance >= 0 ? "text-indigo-700" : "text-rose-600"}`}
               >
                 ₹{balance.toLocaleString()}
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
               <p className="text-xs text-slate-500 mb-1">Income</p>
-              <p className="text-xl font-bold text-green-600">
+              <p className="text-xl font-bold text-emerald-600">
                 ₹{totalIncome.toLocaleString()}
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
               <p className="text-xs text-slate-500 mb-1">Expenses</p>
-              <p className="text-xl font-bold text-red-600">
+              <p className="text-xl font-bold text-rose-600">
                 ₹{totalExpense.toLocaleString()}
               </p>
             </div>
@@ -111,7 +112,7 @@ function Transactions() {
             </h2>
 
             {error && (
-              <p role="alert" className="text-red-500 text-sm mb-4">
+              <p role="alert" className="text-rose-500 text-sm mb-4">
                 {error}
               </p>
             )}
@@ -123,9 +124,9 @@ function Transactions() {
                     type="button"
                     onClick={() => setType("expense")}
                     aria-pressed={type === "expense"}
-                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                       type === "expense"
-                        ? "bg-red-500 text-white"
+                        ? "bg-rose-500 text-white"
                         : "bg-white text-slate-500 hover:bg-slate-50"
                     }`}
                   >
@@ -135,9 +136,9 @@ function Transactions() {
                     type="button"
                     onClick={() => setType("income")}
                     aria-pressed={type === "income"}
-                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`flex-1 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                       type === "income"
-                        ? "bg-green-500 text-white"
+                        ? "bg-emerald-500 text-white"
                         : "bg-white text-slate-500 hover:bg-slate-50"
                     }`}
                   >
@@ -155,7 +156,7 @@ function Transactions() {
                     placeholder="Amount"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -166,15 +167,20 @@ function Transactions() {
                   <label htmlFor="category" className="sr-only">
                     Category
                   </label>
-                  <input
+                  <select
                     id="category"
-                    type="text"
-                    placeholder="Category (e.g. Food, Rent)"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
-                  />
+                  >
+                    <option value="">Select category</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="date" className="sr-only">
@@ -185,7 +191,7 @@ function Transactions() {
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
@@ -201,7 +207,7 @@ function Transactions() {
                   placeholder="Note (optional)"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
@@ -217,14 +223,14 @@ function Transactions() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setReceipt(e.target.files[0])}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
               >
                 {uploading ? "Adding..." : "Add Transaction"}
               </button>
@@ -260,8 +266,8 @@ function Transactions() {
                       aria-hidden="true"
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold ${
                         t.type === "income"
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
+                          ? "bg-emerald-100 text-emerald-600"
+                          : "bg-rose-100 text-rose-600"
                       }`}
                     >
                       {t.type === "income" ? "+" : "−"}
@@ -281,7 +287,7 @@ function Transactions() {
                 <div className="flex items-center gap-4">
                   <p
                     className={`font-semibold text-sm ${
-                      t.type === "income" ? "text-green-600" : "text-red-600"
+                      t.type === "income" ? "text-emerald-600" : "text-rose-600"
                     }`}
                   >
                     <span className="sr-only">
@@ -293,7 +299,7 @@ function Transactions() {
                   <button
                     onClick={() => handleDelete(t._id)}
                     aria-label={`Delete ${t.category} transaction of ₹${t.amount}`}
-                    className="text-slate-300 hover:text-red-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-red-300 rounded"
+                    className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
                   >
                     Delete
                   </button>

@@ -17,12 +17,13 @@ import {
 import api from "../services/api";
 
 const COLORS = [
-  "#3B82F6",
-  "#EF4444",
+  "#6366F1",
+  "#F43F5E",
   "#F59E0B",
-  "#10B981",
+  "#059669",
   "#8B5CF6",
   "#EC4899",
+  "#06B6D4",
 ];
 
 function Dashboard() {
@@ -88,8 +89,8 @@ function Dashboard() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-slate-50">
-        <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50/40 via-white to-violet-50/40">
+        <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
             <div>
               <h1 className="text-3xl font-bold text-slate-800">
@@ -101,7 +102,7 @@ function Dashboard() {
             </div>
             <Link
               to="/transactions"
-              className="bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
             >
               + Add Transaction
             </Link>
@@ -114,7 +115,7 @@ function Dashboard() {
               <p className="text-slate-400 text-sm mb-3">No data yet</p>
               <Link
                 to="/transactions"
-                className="text-blue-600 text-sm hover:underline"
+                className="text-indigo-600 text-sm hover:underline"
               >
                 Add your first transaction →
               </Link>
@@ -125,20 +126,20 @@ function Dashboard() {
                 <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">Balance</p>
                   <p
-                    className={`text-xl font-bold ${balance >= 0 ? "text-slate-800" : "text-red-600"}`}
+                    className={`text-xl font-bold ${balance >= 0 ? "text-indigo-700" : "text-rose-600"}`}
                   >
                     ₹{balance.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">Income</p>
-                  <p className="text-xl font-bold text-green-600">
+                  <p className="text-xl font-bold text-emerald-600">
                     ₹{totalIncome.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">Expenses</p>
-                  <p className="text-xl font-bold text-red-600">
+                  <p className="text-xl font-bold text-rose-600">
                     ₹{totalExpense.toLocaleString()}
                   </p>
                 </div>
@@ -220,12 +221,12 @@ function Dashboard() {
                       <Legend wrapperStyle={{ fontSize: 12 }} />
                       <Bar
                         dataKey="income"
-                        fill="#10B981"
+                        fill="#059669"
                         radius={[4, 4, 0, 0]}
                       />
                       <Bar
                         dataKey="expense"
-                        fill="#EF4444"
+                        fill="#F43F5E"
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
@@ -240,7 +241,7 @@ function Dashboard() {
                   </h2>
                   <Link
                     to="/transactions"
-                    className="text-xs text-blue-600 hover:underline"
+                    className="text-xs text-indigo-600 hover:underline"
                   >
                     View all →
                   </Link>
@@ -252,10 +253,11 @@ function Dashboard() {
                   >
                     <div className="flex items-center gap-3">
                       <div
+                        aria-hidden="true"
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
                           t.type === "income"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-rose-100 text-rose-600"
                         }`}
                       >
                         {t.type === "income" ? "+" : "−"}
@@ -271,7 +273,9 @@ function Dashboard() {
                     </div>
                     <p
                       className={`font-semibold text-sm ${
-                        t.type === "income" ? "text-green-600" : "text-red-600"
+                        t.type === "income"
+                          ? "text-emerald-600"
+                          : "text-rose-600"
                       }`}
                     >
                       {t.type === "income" ? "+" : "−"}₹
