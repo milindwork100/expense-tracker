@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import Skeleton from "../components/common/Skeleton";
 import { CATEGORIES } from "../utils/categories";
 import {
   getRecurring,
@@ -225,7 +226,20 @@ function Recurring() {
           </div>
 
           {loading ? (
-            <p className="text-slate-400 text-sm">Loading...</p>
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-9 h-9 rounded-full" />
+                    <div>
+                      <Skeleton className="h-3 w-24 mb-1.5" />
+                      <Skeleton className="h-2.5 w-32" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-3 w-14" />
+                </div>
+              ))}
+            </div>
           ) : rules.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-10 text-center">
               <p className="text-slate-400 text-sm">

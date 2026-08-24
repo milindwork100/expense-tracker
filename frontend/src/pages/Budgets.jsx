@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
 import ConfirmDialog from "../components/common/ConfirmDialog";
+import Skeleton from "../components/common/Skeleton";
 import { CATEGORIES } from "../utils/categories";
 import { RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
 import { getBudgets, setBudget, deleteBudget } from "../services/budgetService";
@@ -174,7 +175,21 @@ function Budgets() {
           </div>
 
           {loading ? (
-            <p className="text-slate-400 text-sm">Loading...</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl shadow-sm border border-slate-100 p-5"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-3 w-10" />
+                  </div>
+                  <Skeleton className="h-40 w-40 rounded-full mx-auto my-2" />
+                  <Skeleton className="h-3 w-28 mx-auto" />
+                </div>
+              ))}
+            </div>
           ) : budgets.length === 0 ? (
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-10 text-center">
               <p className="text-slate-400 text-sm">

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import Layout from "../components/layout/Layout";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 import EditTransactionModal from "../components/transactions/EditTransactionModal";
+import Skeleton from "../components/common/Skeleton";
 import { CATEGORIES } from "../utils/categories";
 import {
   getTransactions,
@@ -21,6 +22,7 @@ function Transactions() {
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
@@ -39,6 +41,7 @@ function Transactions() {
   });
 
   const fetchTransactions = async () => {
+    setLoading(true);
     try {
       const res = await getTransactions({
         type: filterType,
@@ -53,6 +56,8 @@ function Transactions() {
       setPagination(res.data.pagination);
     } catch (err) {
       setError("Failed to load transactions");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -436,83 +441,101 @@ function Transactions() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            {transactions.length === 0 && (
+            {loading ? (
+              <div className="p-4 space-y-4">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-9 h-9 rounded-full" />
+                      <div>
+                        <Skeleton className="h-3 w-24 mb-1.5" />
+                        <Skeleton className="h-2.5 w-32" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                ))}
+              </div>
+            ) : transactions.length === 0 ? (
               <p className="p-8 text-slate-400 text-center text-sm">
                 {hasActiveFilters
                   ? "No transactions match your filters"
                   : "No transactions yet"}
               </p>
-            )}
-            {transactions.map((t) => (
-              <div
-                key={t._id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition"
-              >
-                <div className="flex items-center gap-3">
-                  {t.receiptUrl ? (
-                    <a
-                      href={t.receiptUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={t.receiptUrl}
-                        alt={`Receipt for ${t.category} transaction`}
-                        className="w-9 h-9 rounded-lg object-cover border border-slate-200"
-                      />
-                    </a>
-                  ) : (
-                    <div
-                      aria-hidden="true"
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold ${
+            ) : (
+              transactions.map((t) => (
+                <div
+                  key={t._id}
+                  className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    {t.receiptUrl ? (
+                      <a
+                        href={t.receiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={t.receiptUrl}
+                          alt={`Receipt for ${t.category} transaction`}
+                          className="w-9 h-9 rounded-lg object-cover border border-slate-200"
+                        />
+                      </a>
+                    ) : (
+                      <div
+                        aria-hidden="true"
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold ${
+                          t.type === "income"
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-rose-100 text-rose-600"
+                        }`}
+                      >
+                        {t.type === "income" ? "+" : "−"}
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-slate-800 text-sm">
+                        {t.category}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {t.note ? `${t.note} · ` : ""}
+                        {new Date(t.date).toLocaleDateString()}
+                        {t.receiptUrl ? " · 📎 Receipt" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <p
+                      className={`font-semibold text-sm ${
                         t.type === "income"
-                          ? "bg-emerald-100 text-emerald-600"
-                          : "bg-rose-100 text-rose-600"
+                          ? "text-emerald-600"
+                          : "text-rose-600"
                       }`}
                     >
-                      {t.type === "income" ? "+" : "−"}
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-medium text-slate-800 text-sm">
-                      {t.category}
+                      <span className="sr-only">
+                        {t.type === "income" ? "Income" : "Expense"}:{" "}
+                      </span>
+                      {t.type === "income" ? "+" : "−"}₹
+                      {t.amount.toLocaleString()}
                     </p>
-                    <p className="text-xs text-slate-400">
-                      {t.note ? `${t.note} · ` : ""}
-                      {new Date(t.date).toLocaleDateString()}
-                      {t.receiptUrl ? " · 📎 Receipt" : ""}
-                    </p>
+                    <button
+                      onClick={() => setEditingTransaction(t)}
+                      aria-label={`Edit ${t.category} transaction of ₹${t.amount}`}
+                      className="text-slate-400 hover:text-indigo-600 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteTarget(t)}
+                      aria-label={`Delete ${t.category} transaction of ₹${t.amount}`}
+                      className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <p
-                    className={`font-semibold text-sm ${
-                      t.type === "income" ? "text-emerald-600" : "text-rose-600"
-                    }`}
-                  >
-                    <span className="sr-only">
-                      {t.type === "income" ? "Income" : "Expense"}:{" "}
-                    </span>
-                    {t.type === "income" ? "+" : "−"}₹
-                    {t.amount.toLocaleString()}
-                  </p>
-                  <button
-                    onClick={() => setEditingTransaction(t)}
-                    aria-label={`Edit ${t.category} transaction of ₹${t.amount}`}
-                    className="text-slate-400 hover:text-indigo-600 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-300 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setDeleteTarget(t)}
-                    aria-label={`Delete ${t.category} transaction of ₹${t.amount}`}
-                    className="text-slate-300 hover:text-rose-500 text-xs transition focus:outline-none focus:ring-2 focus:ring-rose-300 rounded"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {pagination.totalPages > 1 && (
