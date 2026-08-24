@@ -6,7 +6,17 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", process.env.FRONTEND_URL],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        origin === "http://localhost:5173" ||
+        origin === process.env.FRONTEND_URL ||
+        /\.vercel\.app$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
