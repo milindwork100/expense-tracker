@@ -1,16 +1,4 @@
-cat > frontend/public/logo.svg << 'EOF'
 <svg width="64" height="64" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
-<path d="M 170 70
-         C 110 75, 65 115, 68 160
-         C 71 205, 118 235, 168 233
-         C 218 231, 262 198, 264 155
-         C 266 118, 238 88, 200 78"
-      fill="none" stroke="#4F46E5" stroke-width="14" stroke-linecap="round"/>
-<path d="M 170 70
-         C 110 75, 65 115, 68 160
-         C 71 205, 118 235, 168 233
-         C 218 231, 262 198, 264 155
-         C 266 118, 238 88, 200 78"
-      fill="none" stroke="#818CF8" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+<path d="M 170 70 C 110 75, 65 115, 68 160 C 71 205, 118 235, 168 233 C 218 231, 262 198, 264 155 C 266 118, 238 88, 200 78" fill="none" stroke="#4F46E5" stroke-width="14" stroke-linecap="round"/>
+<path d="M 170 70 C 110 75, 65 115, 68 160 C 71 205, 118 235, 168 233 C 218 231, 262 198, 264 155 C 266 118, 238 88, 200 78" fill="none" stroke="#818CF8" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
 </svg>
-EOF
