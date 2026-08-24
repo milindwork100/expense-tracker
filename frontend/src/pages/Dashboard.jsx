@@ -40,10 +40,10 @@ function Dashboard() {
       try {
         const [summaryRes, txRes] = await Promise.all([
           api.get("/transactions/summary"),
-          api.get("/transactions"),
+          api.get("/transactions?limit=1000"),
         ]);
         setSummary(summaryRes.data);
-        setTransactions(txRes.data);
+        setTransactions(txRes.data.transactions);
       } catch (err) {
         console.error(err);
       } finally {

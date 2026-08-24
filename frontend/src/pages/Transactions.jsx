@@ -31,6 +31,13 @@ function Transactions() {
   const [filterSearch, setFilterSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  });
+
   const fetchTransactions = async () => {
     try {
       const res = await getTransactions({
@@ -39,8 +46,11 @@ function Transactions() {
         startDate: filterStartDate,
         endDate: filterEndDate,
         search: filterSearch,
+        page,
+        limit: 10,
       });
-      setTransactions(res.data);
+      setTransactions(res.data.transactions);
+      setPagination(res.data.pagination);
     } catch (err) {
       setError("Failed to load transactions");
     }
@@ -48,6 +58,17 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions();
+  }, [
+    filterType,
+    filterCategory,
+    filterStartDate,
+    filterEndDate,
+    filterSearch,
+    page,
+  ]);
+
+  useEffect(() => {
+    setPage(1);
   }, [
     filterType,
     filterCategory,
@@ -140,7 +161,7 @@ function Transactions() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
-              <p className="text-xs text-slate-500 mb-1">Balance</p>
+              <p className="text-xs text-slate-500 mb-1">Balance (this page)</p>
               <p
                 className={`text-xl font-bold ${balance >= 0 ? "text-indigo-700" : "text-rose-600"}`}
               >
@@ -148,13 +169,15 @@ function Transactions() {
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
-              <p className="text-xs text-slate-500 mb-1">Income</p>
+              <p className="text-xs text-slate-500 mb-1">Income (this page)</p>
               <p className="text-xl font-bold text-emerald-600">
                 ₹{totalIncome.toLocaleString()}
               </p>
             </div>
             <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
-              <p className="text-xs text-slate-500 mb-1">Expenses</p>
+              <p className="text-xs text-slate-500 mb-1">
+                Expenses (this page)
+              </p>
               <p className="text-xl font-bold text-rose-600">
                 ₹{totalExpense.toLocaleString()}
               </p>
@@ -491,6 +514,33 @@ function Transactions() {
               </div>
             ))}
           </div>
+
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-xs text-slate-500">
+                Page {pagination.page} of {pagination.totalPages} ·{" "}
+                {pagination.total} total
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className="px-3 py-1.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.totalPages, p + 1))
+                  }
+                  disabled={page >= pagination.totalPages}
+                  className="px-3 py-1.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

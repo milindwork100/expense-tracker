@@ -21,10 +21,18 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-// Read (all, for logged-in user, with optional filters)
+// Read (all, for logged-in user, with optional filters + pagination)
 exports.getTransactions = async (req, res) => {
   try {
-    const { type, category, startDate, endDate, search } = req.query;
+    const {
+      type,
+      category,
+      startDate,
+      endDate,
+      search,
+      page = 1,
+      limit = 10,
+    } = req.query;
     const query = { user: req.user._id };
 
     if (type) query.type = type;
@@ -43,8 +51,24 @@ exports.getTransactions = async (req, res) => {
       ];
     }
 
-    const transactions = await Transaction.find(query).sort({ date: -1 });
-    res.json(transactions);
+    const pageNum = Math.max(1, Number(page));
+    const limitNum = Math.max(1, Number(limit));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [transactions, total] = await Promise.all([
+      Transaction.find(query).sort({ date: -1 }).skip(skip).limit(limitNum),
+      Transaction.countDocuments(query),
+    ]);
+
+    res.json({
+      transactions,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
