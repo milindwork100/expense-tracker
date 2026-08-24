@@ -28,9 +28,21 @@ function Signup() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 w-full max-w-sm"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-slate-800">
-          Sign Up
-        </h2>
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="/logo.svg"
+            alt=""
+            className="w-14 h-14 mb-2"
+            aria-hidden="true"
+          />
+          <h1
+            className="text-3xl font-bold text-indigo-700"
+            style={{ fontFamily: "'Caveat', cursive" }}
+          >
+            ZenBudget
+          </h1>
+        </div>
+        <h2 className="sr-only">Sign Up</h2>
 
         {error && (
           <p role="alert" className="text-rose-500 text-sm mb-4 text-center">

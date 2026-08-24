@@ -22,7 +22,15 @@ function Navbar() {
   return (
     <>
       <div className="md:hidden flex items-center justify-between bg-white border-b border-slate-100 px-4 py-3 sticky top-0 z-30">
-        <h1 className="text-lg font-bold text-indigo-700">ExpenseTracker</h1>
+        <div className="flex items-center gap-2">
+          <img src="/logo.svg" alt="" className="w-8 h-8" aria-hidden="true" />
+          <h1
+            className="text-2xl font-bold text-indigo-700"
+            style={{ fontFamily: "'Caveat', cursive" }}
+          >
+            ZenBudget
+          </h1>
+        </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -77,7 +85,20 @@ function Navbar() {
         }`}
       >
         <div className="p-6 border-b border-slate-100 hidden md:block">
-          <h1 className="text-lg font-bold text-indigo-700">ExpenseTracker</h1>
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo.svg"
+              alt=""
+              className="w-8 h-8"
+              aria-hidden="true"
+            />
+            <h1
+              className="text-2xl font-bold text-indigo-700"
+              style={{ fontFamily: "'Caveat', cursive" }}
+            >
+              ZenBudget
+            </h1>
+          </div>
           <p className="text-xs text-slate-400 mt-1">{user?.name}</p>
         </div>
 
